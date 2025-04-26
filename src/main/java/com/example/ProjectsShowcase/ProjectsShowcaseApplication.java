@@ -12,7 +12,7 @@ public class ProjectsShowcaseApplication implements WebMvcConfigurer {
 		SpringApplication.run(ProjectsShowcaseApplication.class, args);
 	}
 
-	// запросы представлений
+	// какие то изменения
 	@Override
 	public void addViewControllers(ViewControllerRegistry viewControllerRegistry) {
 		viewControllerRegistry.addViewController("/").setViewName("index.html");

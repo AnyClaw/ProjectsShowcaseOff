@@ -94,7 +94,7 @@ public class MainController {
         return "saved project";
     }
 
-    // удаление проекта из current project в refuse project
+    // удаление проекта из current project
     @PostMapping("/projects/refuse/{teamlidId}")
     public String delCurrentProject(@PathVariable Long teamlidId) {
 

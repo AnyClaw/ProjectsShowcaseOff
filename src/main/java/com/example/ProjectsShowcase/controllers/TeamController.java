@@ -43,8 +43,33 @@ public class TeamController {
         Team team = new Team(null, name, teamlid, List.of(teamlid),
                 null, null, null);
 
+        if (teammatesId != null) {
+            for (Long teammateId : teammatesId) {
+                team.addTeammate(userRepository.findById(teammateId).get());
+            }
+        }
+
+        teamRepository.save(team);
+        return "new team create";
+    }
+
+    // добавление в команду
+    @PostMapping("/teams/add/teammate/{teamlidId}/{teammateId}")
+    public String addTeammates(@PathVariable Long teamlidId,
+                             @PathVariable Long teammateId) {
+
+        Team team = teamRepository.findByTeammates_id(teamlidId);
+        team.addTeammate(userRepository.findById(teammateId).get());
+
         teamRepository.save(team);
         return "saved";
+    }
+
+    // удаление команды - не работает todo
+    @PostMapping("/teams/delete/{teamlidId}")
+    public String deleteTeam(@PathVariable Long teamlidId) {
+        teamRepository.delete(teamRepository.findByTeammates_id(teamlidId));
+        return "team deleted";
     }
 
     // бронирование проекта (current project)

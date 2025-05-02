@@ -16,10 +16,9 @@ public class ProjectsShowcaseApplication implements WebMvcConfigurer {
 	@Override
 	public void addViewControllers(ViewControllerRegistry viewControllerRegistry) {
 		viewControllerRegistry.addViewController("/").setViewName("index.html"); // все проекты
-		viewControllerRegistry.addViewController("/login").setViewName("login.html");
-		viewControllerRegistry.addViewController("/project/request").setViewName("project_request.html");
-		viewControllerRegistry.addViewController("/user/profile").setViewName("user_profile.html");
-		viewControllerRegistry.addViewController("/team/profile").setViewName("team_profile.html");
-		viewControllerRegistry.addViewController("/team/request").setViewName("team_request.html");
+		viewControllerRegistry.addViewController("/request").setViewName("project_request.html");
+		viewControllerRegistry.addViewController("/profile").setViewName("user_profile.html");
+		viewControllerRegistry.addViewController("/team").setViewName("team_profile.html");
+		viewControllerRegistry.addViewController("/team/create").setViewName("team_create.html");
   }
 }

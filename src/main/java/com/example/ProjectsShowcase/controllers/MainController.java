@@ -20,6 +20,13 @@ public class MainController {
     private final PasswordEncoder encoder;
     private final Parser parser;
 
+    // todo метод представления - дописать @PathVariable и тд
+    @GetMapping("/project/info/{id}")
+    public String getProject() {
+        return "project_info.html";
+    }
+
+
     @PostMapping("/load")
     public String loadDada() {
         parser.loadData();
@@ -27,15 +34,21 @@ public class MainController {
     }
 
     // все проекты
-    @GetMapping("/project")
+    @GetMapping("/")
     public Iterable<ProjectFullInfo> findAllProject() {
         return projectRepository.findAll();
     }
 
     // информация о проекте
-    @GetMapping("/project/{id}")
-    public ProjectFullInfo getProjectInfo(@PathVariable Long id) {
-        return projectRepository.findById(id).get();
+    @GetMapping("/api/project/info/{projectId}")
+    public ProjectFullInfo getProjectInfo(@PathVariable Long projectId) {
+        return projectRepository.findById(projectId).get();
+    }
+
+    // активные проекты - показал проект с "COMPLETED" и "ON_WORK"
+    @GetMapping("/api/project/active")
+    public Iterable<ProjectFullInfo> findActiveProject() {
+        return projectRepository.findActiveProjects();
     }
 
 }

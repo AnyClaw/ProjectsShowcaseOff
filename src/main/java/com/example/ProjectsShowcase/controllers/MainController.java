@@ -1,6 +1,9 @@
 package com.example.ProjectsShowcase.controllers;
 
 import com.example.ProjectsShowcase.models.ProjectFullInfo;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.example.ProjectsShowcase.repositories.UserRepository;
@@ -20,35 +23,26 @@ public class MainController {
     private final PasswordEncoder encoder;
     private final Parser parser;
 
-    // todo метод представления - дописать @PathVariable и тд
-    @GetMapping("/project/info/{id}")
-    public String getProject() {
-        return "project_info.html";
-    }
-
-
     @PostMapping("/load")
     public String loadDada() {
         parser.loadData();
         return "saved";
     }
 
-    // все проекты
-    @GetMapping("/")
-    public Iterable<ProjectFullInfo> findAllProject() {
-        return projectRepository.findAll();
-    }
+    // бронирование проекта (current project)
+    @PostMapping("/api/book/project/{projectId}/{teamlidId}")
+    public ResponseEntity<?> addCurrentProject(@PathVariable Long projectId, @PathVariable Long teamlidId) {
 
-    // информация о проекте
-    @GetMapping("/api/project/info/{projectId}")
-    public ProjectFullInfo getProjectInfo(@PathVariable Long projectId) {
-        return projectRepository.findById(projectId).get();
-    }
+        if (teamRepository.findByTeammates_id(teamlidId).getCurrentProject() != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Message: you have current project");
+        }
 
-    // активные проекты - показал проект с "COMPLETED" и "ON_WORK"
-    @GetMapping("/api/project/active")
-    public Iterable<ProjectFullInfo> findActiveProject() {
-        return projectRepository.findActiveProjects();
+        teamRepository.findByTeammates_id(teamlidId)
+                .setCurrentProject(projectRepository.findById(projectId).get());
+
+        teamRepository.save(teamRepository.findByTeammates_id(teamlidId));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Message: project booked");
+
     }
 
 }

@@ -19,17 +19,29 @@ public class ProjectController {
 
     private final ProjectRepository projectRepository;
 
+    // активные проекты
+    @GetMapping("/active")
+    public ResponseEntity<Iterable<ProjectFullInfo>> findActiveProject() {
+        return ResponseEntity.status(HttpStatus.OK).body(projectRepository.findActiveProjects());
+    }
+
+    // информация о проекте
+    @GetMapping("/info/{projectId}")
+    public ResponseEntity<ProjectFullInfo> getProjectInfo(@PathVariable Long projectId) {
+        return ResponseEntity.status(HttpStatus.OK).body(projectRepository.findById(projectId).get());
+    }
+
     // заявка на добавление нового проекта
     @PostMapping("/request")
-    public ResponseEntity<ProjectFullInfo> createProject(@RequestBody ProjectFullInfo project) {
+    public ResponseEntity<?> createProject(@RequestBody ProjectFullInfo project) {
         projectRepository.save(project);
-        return ResponseEntity.status(HttpStatus.CREATED).body(project);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Message: project created");
     }
 
     // удаление проекта
     @PostMapping("/delete/{projectId}")
     public ResponseEntity<?> deleteProject(@PathVariable Long projectId) {
         projectRepository.delete(projectRepository.findById(projectId).get());
-        return ResponseEntity.status(HttpStatus.OK).body("project delete");
+        return ResponseEntity.status(HttpStatus.OK).body("Message: project delete");
     }
 }

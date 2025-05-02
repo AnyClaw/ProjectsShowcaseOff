@@ -26,7 +26,7 @@ public class TeamController {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
 
-    // все команды - позже убрать
+    // все команды -  todo позже убрать
     @GetMapping("/all")
     public Iterable<Team> getAllTeam() {
         return teamRepository.findAll();
@@ -34,13 +34,13 @@ public class TeamController {
 
     // информация о команде по айди пользователя
     @GetMapping("/info/{id}")
-    public Team getTeamInfo(@PathVariable Long id) {
-        return teamRepository.findByTeammates_id(id);
+    public ResponseEntity<Team> getTeamInfo(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(teamRepository.findByTeammates_id(id));
     }
 
     // создание команды
     @PostMapping("/create/{id}/{name}")
-    public ResponseEntity<Team> createTeam(@PathVariable Long id, @PathVariable String name,
+    public ResponseEntity<?> createTeam(@PathVariable Long id, @PathVariable String name,
                                      @RequestParam(required = false) ArrayList<Long> teammatesId) {
 
         MyUser teamlid = userRepository.findById(id).get();
@@ -55,45 +55,29 @@ public class TeamController {
         }
 
         teamRepository.save(team);
-        return ResponseEntity.status(HttpStatus.CREATED).body(team);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Message: team created");
     }
 
     // добавление участника в команду
     @PostMapping("/add/{teamlidId}/{teammateId}")
-    public ResponseEntity<Team> addTeammates(@PathVariable Long teamlidId,
+    public ResponseEntity<?> addTeammates(@PathVariable Long teamlidId,
                              @PathVariable Long teammateId) {
 
         Team team = teamRepository.findByTeammates_id(teamlidId);
         team.addTeammate(userRepository.findById(teammateId).get());
 
         teamRepository.save(team);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(team);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Message: teammate add");
     }
 
     // todo удаление команды - не работает
     @PostMapping("/delete/{teamlidId}")
     public ResponseEntity<?> deleteTeam(@PathVariable Long teamlidId) {
         teamRepository.delete(teamRepository.findByTeammates_id(teamlidId));
-        return ResponseEntity.status(HttpStatus.OK).body("team deleted");
+        return ResponseEntity.status(HttpStatus.OK).body("Message: team deleted");
     }
 
-    // бронирование проекта (current project)
-    @PostMapping("/current/{id}/{teamlidId}")
-    public ResponseEntity<?> addCurrentProject(@PathVariable Long id, @PathVariable Long teamlidId) {
-
-        if (teamRepository.findByTeammates_id(teamlidId).getCurrentProject() != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("У вас уже есть текущий проект");
-        }
-
-        teamRepository.findByTeammates_id(teamlidId)
-                .setCurrentProject(projectRepository.findById(id).get());
-
-        teamRepository.save(teamRepository.findByTeammates_id(teamlidId));
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(teamRepository.findByTeammates_id(teamlidId));
-
-    }
-
-    // завершение проекта (finish project) - не сохраняет без save
+    // завершение проекта (finish project)
     @PostMapping("/finish/{teamlidId}")
     public ResponseEntity<Team> endCurrentProject(@PathVariable Long teamlidId) {
 
@@ -103,7 +87,7 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(teamRepository.findByTeammates_id(teamlidId));
     }
 
-    // отказ от проекта (из current project в refuse project) - не сохраняет без save
+    // отказ от проекта (из current project в refuse project)
     @PostMapping("/refuse/{teamlidId}")
     public ResponseEntity<Team> delCurrentProject(@PathVariable Long teamlidId) {
 

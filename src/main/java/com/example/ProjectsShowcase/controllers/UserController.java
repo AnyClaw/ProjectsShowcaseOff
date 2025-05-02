@@ -19,7 +19,7 @@ public class UserController {
 
     private final UserRepository userRepository;
 
-    // все пользователи - позже убрать
+    // все пользователи - todo позже убрать
     @GetMapping("/all")
     public Iterable<MyUser> getAllUser() {
         return userRepository.findAll();
@@ -30,5 +30,6 @@ public class UserController {
     public ResponseEntity<MyUser> getUserInfo(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.findById(id).get());
     }
+
 
 }

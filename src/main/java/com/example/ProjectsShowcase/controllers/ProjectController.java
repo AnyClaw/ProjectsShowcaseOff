@@ -2,18 +2,14 @@ package com.example.ProjectsShowcase.controllers;
 
 import com.example.ProjectsShowcase.models.ProjectFullInfo;
 import com.example.ProjectsShowcase.repositories.ProjectRepository;
-import com.example.ProjectsShowcase.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequiredArgsConstructor
-@Secured({"ROLE_USER", "ROLE_ADMIN"})
 @RequestMapping("/api/project")
 public class ProjectController {
 
@@ -32,16 +28,18 @@ public class ProjectController {
     }
 
     // заявка на добавление нового проекта
+    @Secured("ROLE_ADMIN")
     @PostMapping("/request")
-    public ResponseEntity<?> createProject(@RequestBody ProjectFullInfo project) {
+    public ResponseEntity<ResponseForm> createProject(@RequestBody ProjectFullInfo project) {
         projectRepository.save(project);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Message: project created");
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseForm("project created"));
     }
 
     // удаление проекта
+    @Secured("ROLE_ADMIN")
     @PostMapping("/delete/{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long projectId) {
+    public ResponseEntity<ResponseForm> deleteProject(@PathVariable Long projectId) {
         projectRepository.delete(projectRepository.findById(projectId).get());
-        return ResponseEntity.status(HttpStatus.OK).body("Message: project delete");
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseForm("project delete"));
     }
 }
